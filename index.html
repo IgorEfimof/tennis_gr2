@@ -70,7 +70,7 @@
             align-items: center;
             gap: 0.2rem; /* Уменьшен gap */
             font-size: 0.8rem; /* Уменьшен размер шрифта */
-            width: 100%;
+            width: 48%;
         }
 
         .player img {
@@ -286,7 +286,7 @@
     <div class="container">
         <header>
             <h1>Анализ коэффициентов в настольном теннисе (LIVE)</h1>
-            <p>Введите коэффициенты на Игрока А по каждому гейму. Инструмент для отслеживания динамики.</p>
+            <p>Введите коэффициенты на игроков A и B по каждому гейму. Инструмент для отслеживания динамики.</p>
         </header>
         <main>
             <div class="players">
@@ -295,39 +295,52 @@
                     <span>Игрок A</span>
                     <span class="score">0</span>
                 </div>
+				<div class="player player-b">
+                    <img src="images/Photoroom_20250515_221809 2.jpeg" alt="Игрок B" />
+                    <span>Игрок B</span>
+                    <span class="score">0</span>
+                </div>
             </div>
             <div id="games">
                 <div class="game-input">
                     <p><strong>Гейм 1</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="1" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="1" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 2</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="2" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="2" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 3</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="3" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="3" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 4</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="4" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="4" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 5</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="5" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="5" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 6</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="6" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="6" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 7</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="7" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="7" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 8</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="8" maxlength="5" readonly>
+					<input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="8" maxlength="5" readonly>
                 </div>
             </div>
             <button id="clearBtn">Очистить данные</button>
@@ -378,10 +391,13 @@
 
             const getFormattedValues = () => {
                 const valuesA = [];
-                for (let i = 0; i < inputs.length; i++) {
+				const valuesB = [];
+                for (let i = 0; i < inputs.length; i+=2) {
                     const inputA = inputs[i];
+					const inputB = inputs[i+1]
 
                     let valueStrA = inputA.value;
+					let valueStrB = inputB.value;
 
                     const formatValue = (str) => {
                         if (!str) return NaN;
@@ -404,28 +420,37 @@
                     };
 
                     valuesA.push(formatValue(valueStrA));
+					valuesB.push(formatValue(valueStrB));
                 }
-                return { valuesA };
+                return { valuesA, valuesB };
             };
 
             const performAnalysis = () => {
-                const { valuesA } = getFormattedValues();
+                const { valuesA, valuesB } = getFormattedValues();
                 let winner = "Победитель не определен";
                 let winnerFound = false;
+				let allInputsFilled = true;
+
+				for (let i = 0; i < inputs.length; i++) {
+					if (inputs[i].value === "") {
+						allInputsFilled = false;
+						break;
+					}
+				}
 
                 for (let i = 0; i < gameCount - 3; i += 2) {
-                    const game1 = valuesA[i];
-                    const game3 = valuesA[i + 2];
-                    const game2 = valuesA[i + 1];
-                    const game4 = valuesA[i + 3];
+                    const game1A = valuesA[i];
+                    const game3A = valuesA[i + 2];
+                    const game2A = valuesA[i + 1];
+                    const game4A = valuesA[i + 3];
 
-                    if (!isNaN(game1) && !isNaN(game3) && !isNaN(game2) && !isNaN(game4)) {
-                        if (Math.abs(game1 - game3) <= 0.02) {
-                            if (game4 < game2) {
+                    if (!isNaN(game1A) && !isNaN(game3A) && !isNaN(game2A) && !isNaN(game4A)) {
+                        if (Math.abs(game1A - game3A) <= 0.02) {
+                            if (game4A < game2A) {
                                 winner = "Победитель - Игрок 1";
                                 winnerFound = true;
                                 break;
-                            } else if (game4 > game2) {
+                            } else if (game4A > game2A) {
                                 winner = "Победитель - Игрок 2";
                                 winnerFound = true;
                                 break;
@@ -436,7 +461,10 @@
 
                 winnerSpan.textContent = winner;
                 resultDiv.classList.remove("hidden");
-				hideKeyboard();
+
+				if (winnerFound || allInputsFilled) {
+					hideKeyboard();
+				}
             };
 
             inputs.forEach((input) => {
@@ -473,7 +501,6 @@
 
                     if (key === "delete") {
                         activeInput.value = currentValue.slice(0, -1);
-                        performAnalysis();
                     } else if (key === ".") {
                         if (!currentValue.includes(',')) {
                             if (currentValue.length === 0) {
@@ -498,7 +525,7 @@
                             }
                         }
                     }
-					 performAnalysis();
+					performAnalysis();
                 });
             });
 
