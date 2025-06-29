@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Анализ коэффициентов в настольном теннисе (LIVE)</title>
-    <script src="data:text/javascript;base64,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImNoYXJ0c2VydmVyIiwiaWF0IjoxNjU5NTA2NjA2LCJleHAiOjE2NjIwOTg2MDZ9.YOUR_CHARTJS_BASE64_HERE" onerror="var chartScript = document.createElement('script'); chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js'; document.head.appendChild(chartScript);"></script>
     <style>
         /* Общие стили */
         * {
@@ -71,7 +70,7 @@
             align-items: center;
             gap: 0.2rem; /* Уменьшен gap */
             font-size: 0.8rem; /* Уменьшен размер шрифта */
-            width: 48%;
+            width: 100%;
         }
 
         .player img {
@@ -280,12 +279,6 @@
             body.keyboard-active .container {
                 padding-bottom: 220px; 
             }
-
-            #chart {
-                height: 180px; 
-                max-height: 180px;
-                margin-top: 0.4rem; 
-            }
         }
     </style>
 </head>
@@ -293,7 +286,7 @@
     <div class="container">
         <header>
             <h1>Анализ коэффициентов в настольном теннисе (LIVE)</h1>
-            <p>Введите коэффициенты на игроков A и B по каждому гейму. Инструмент для отслеживания динамики.</p>
+            <p>Введите коэффициенты на Игрока А по каждому гейму. Инструмент для отслеживания динамики.</p>
         </header>
         <main>
             <div class="players">
@@ -302,65 +295,46 @@
                     <span>Игрок A</span>
                     <span class="score">0</span>
                 </div>
-                <div class="player player-b">
-                    <img src="images/Photoroom_20250515_221809 2.jpeg" alt="Игрок B" />
-                    <span>Игрок B</span>
-                    <span class="score">0</span>
-                </div>
             </div>
             <div id="games">
                 <div class="game-input">
                     <p><strong>Гейм 1</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="1" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="1" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 2</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="2" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="2" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 3</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="3" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="3" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 4</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="4" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="4" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 5</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="5" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="5" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 6</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="6" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="6" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 7</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="7" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="7" maxlength="5" readonly>
                 </div>
                 <div class="game-input">
                     <p><strong>Гейм 8</strong></p>
                     <input type="text" inputmode="none" placeholder="Коэф. A" data-player="a" data-id="8" maxlength="5" readonly>
-                    <input type="text" inputmode="none" placeholder="Коэф. B" data-player="b" data-id="8" maxlength="5" readonly>
                 </div>
             </div>
             <button id="clearBtn">Очистить данные</button>
             <div id="result" class="result hidden">
-                <h2>Текущая аналитика:</h2>
-                <p>A: <span id="avgA"></span> | B: <span id="avgB"></span> (средние)</p>
-                <p>Текущая разница: <span id="currentDifference"></span></p>
-                <p><strong>Динамика:</strong> <span id="trendAnalysis"></span></p>
-                <p>1-е сближение: <span id="firstIntersectionPoint"></span></p>
-                <p><strong>Прогноз волн (от текущей):</strong> <span id="wavePrediction"></span></p>
-                <p><strong>Лидер (по анализу):</strong> <span id="potentialLeader"></span></p>
+                <h2>Результат:</h2>
+                <p><span id="winner"></span></p>
             </div>
-            <canvas id="chart"></canvas>
         </main>
     </div>
 
@@ -379,50 +353,35 @@
     </div>
 
     <script>
-        // ВНИМАНИЕ: Chart.js будет загружен по сети, если не удалось "встроить" его.
-        // Это самое надежное решение для iPad.
-        
         document.addEventListener("DOMContentLoaded", () => {
-            const gameCount = 8; 
+            const gameCount = 8;
             const clearBtn = document.getElementById("clearBtn");
             const resultDiv = document.getElementById("result");
-            const avgASpan = document.getElementById("avgA");
-            const avgBSpan = document.getElementById("avgB");
-            const currentDifferenceSpan = document.getElementById("currentDifference");
-            const trendAnalysisSpan = document.getElementById("trendAnalysis");
-            const firstIntersectionPointSpan = document.getElementById("firstIntersectionPoint");
-            const wavePredictionSpan = document.getElementById("wavePrediction");
-            const potentialLeaderSpan = document.getElementById("potentialLeader");
-            
-            const chartCanvas = document.getElementById("chart");
-            let chartInstance = null; 
+            const winnerSpan = document.getElementById("winner");
 
             const customKeyboard = document.getElementById("custom-keyboard");
             const keyboardButtons = customKeyboard.querySelectorAll("button");
 
-            let activeInput = null; 
+            let activeInput = null;
 
             const inputs = document.querySelectorAll("input[type='text']");
-            const lastInput = inputs[inputs.length - 1]; 
+            const lastInput = inputs[inputs.length - 1];
 
             const hideKeyboard = () => {
                 customKeyboard.classList.remove("visible");
                 document.body.classList.remove("keyboard-active");
                 if (activeInput) {
-                    activeInput.blur(); 
+                    activeInput.blur();
                 }
-                activeInput = null; 
+                activeInput = null;
             };
 
             const getFormattedValues = () => {
                 const valuesA = [];
-                const valuesB = [];
-                for (let i = 0; i < inputs.length; i += 2) {
+                for (let i = 0; i < inputs.length; i++) {
                     const inputA = inputs[i];
-                    const inputB = inputs[i + 1];
 
                     let valueStrA = inputA.value;
-                    let valueStrB = inputB.value;
 
                     const formatValue = (str) => {
                         if (!str) return NaN;
@@ -432,276 +391,52 @@
                                 str = parts[0] + ',00';
                             } else if (parts[1].length === 1) {
                                 str = parts[0] + ',' + parts[1] + '0';
-                            } else if (parts[1].length > 2) { 
+                            } else if (parts[1].length > 2) {
                                 str = parts[0] + ',' + parts[1].substring(0,2);
-                            } else { 
+                            } else {
                                 str = str + ',00';
                             }
                         }
-                         else { 
+                         else {
                             str = str + ',00';
                         }
                         return parseFloat(str.replace(/,/g, "."));
                     };
-                    
+
                     valuesA.push(formatValue(valueStrA));
-                    valuesB.push(formatValue(valueStrB));
                 }
-                return { valuesA, valuesB };
+                return { valuesA };
             };
 
             const performAnalysis = () => {
-                const { valuesA, valuesB } = getFormattedValues();
+                const { valuesA } = getFormattedValues();
+                let winner = "Победитель не определен";
+                let winnerFound = false;
 
-                let totalA = 0;
-                let totalB = 0;
-                let filledGamesCount = 0; 
+                for (let i = 0; i < gameCount - 3; i += 2) {
+                    const game1 = valuesA[i];
+                    const game3 = valuesA[i + 2];
+                    const game2 = valuesA[i + 1];
+                    const game4 = valuesA[i + 3];
 
-                const labels = [];
-                const dataA = [];
-                const dataB = [];
-
-                for (let i = 0; i < gameCount; i++) {
-                    labels.push(`Гейм ${i + 1}`);
-                    dataA.push(valuesA[i]);
-                    dataB.push(valuesB[i]);
-
-                    if (!isNaN(valuesA[i]) && !isNaN(valuesB[i])) {
-                        totalA += valuesA[i];
-                        totalB += valuesB[i];
-                        filledGamesCount++;
-                    }
-                }
-
-                if (filledGamesCount === 0) {
-                    resultDiv.classList.add("hidden");
-                    if (chartInstance) {
-                        chartInstance.data.labels = [];
-                        chartInstance.data.datasets = [];
-                        chartInstance.update();
-                    }
-                    return;
-                }
-
-                const avgA = (totalA / filledGamesCount).toFixed(2);
-                const avgB = (totalB / filledGamesCount).toFixed(2); 
-
-                avgASpan.textContent = avgA;
-                avgBSpan.textContent = avgB;
-
-                let currentDiff = 'Нет';
-                if (!isNaN(valuesA[filledGamesCount - 1]) && !isNaN(valuesB[filledGamesCount - 1])) {
-                    currentDiff = (valuesA[filledGamesCount - 1] - valuesB[filledGamesCount - 1]).toFixed(2);
-                }
-                currentDifferenceSpan.textContent = currentDiff;
-
-                let trend = 'Нет данных';
-                if (filledGamesCount >= 2) {
-                    const lastA = valuesA[filledGamesCount - 1];
-                    const secondLastA = valuesA[filledGamesCount - 2];
-                    const lastB = valuesB[filledGamesCount - 1];
-                    const secondLastB = valuesB[filledGamesCount - 2];
-
-                    let trendA = '';
-                    if (lastA < secondLastA) trendA = 'A↓'; 
-                    else if (lastA > secondLastA) trendA = 'A↑'; 
-                    else trendA = 'A='; 
-
-                    let trendB = '';
-                    if (lastB < secondLastB) trendB = 'B↓';
-                    else if (lastB > secondLastB) trendB = 'B↑';
-                    else trendB = 'B=';
-
-                    trend = `${trendA} ${trendB}.`;
-
-                    const diffNow = Math.abs(lastA - lastB);
-                    const diffBefore = Math.abs(secondLastA - secondLastB);
-
-                    if (diffNow < diffBefore) {
-                        trend += ' Сближение.';
-                    } else if (diffNow > diffBefore) {
-                        trend += ' Расхождение.';
-                    } else {
-                        trend += ' Параллельно.';
-                    }
-                }
-                trendAnalysisSpan.innerHTML = trend;
-
-                let firstIntersectionGame = 'Нет';
-                // Теперь мы ищем первое пересечение в целом, а не для волнового анализа
-                for (let i = 0; i < filledGamesCount; i++) {
-                    if (!isNaN(valuesA[i]) && !isNaN(valuesB[i])) {
-                        if (i > 0 && !isNaN(valuesA[i-1]) && !isNaN(valuesB[i-1])) {
-                             const prevDiff = valuesA[i-1] - valuesB[i-1];
-                             const currentDiffVal = valuesA[i] - valuesB[i];
-                             if ((prevDiff * currentDiffVal < 0) || (prevDiff === 0 && currentDiffVal !== 0)) { 
-                                 if (firstIntersectionGame === 'Нет') { 
-                                     firstIntersectionGame = `Гейм ${i + 1}`;
-                                 }
-                             }
-                        }
-                    }
-                }
-                if (firstIntersectionGame === 'Нет' && filledGamesCount > 0) {
-                     firstIntersectionGame = 'Не найдено.';
-                }
-                firstIntersectionPointSpan.textContent = firstIntersectionGame;
-
-                let wavePrediction = 'Нет данных.';
-                let potentialLeader = 'Нет данных.';
-                const GAME_THRESHOLD = 8; 
-
-                // *** Изменение здесь: initialWavePoint теперь последний заполненный гейм ***
-                if (filledGamesCount > 0) {
-                    const initialWavePoint = filledGamesCount; 
-                    
-                    const nextWaveRangeStart = initialWavePoint + 3;
-                    const nextWaveRangeEnd = initialWavePoint + 4;
-                    
-                    const thirdWaveRangeStart = initialWavePoint + 6;
-                    const thirdWaveRangeEnd = initialWavePoint + 8;
-
-                    let waveMsgParts = [];
-                    // Первую точку теперь не указываем, т.к. это "текущий гейм"
-                    
-                    let nextWaveStatus = '';
-                    if (nextWaveRangeEnd <= GAME_THRESHOLD) {
-                        nextWaveStatus = `Сл: ${nextWaveRangeStart}-${nextWaveRangeEnd}.`;
-                    } else if (nextWaveRangeStart <= GAME_THRESHOLD && nextWaveRangeEnd > GAME_THRESHOLD) {
-                        nextWaveStatus = `Сл: ${nextWaveRangeStart}-${GAME_THRESHOLD}+ (за счетом).`;
-                    } else {
-                        nextWaveStatus = `Сл: За счетом.`;
-                    }
-                    waveMsgParts.push(nextWaveStatus);
-
-                    let thirdWaveStatus = '';
-                    if (thirdWaveRangeEnd <= GAME_THRESHOLD) {
-                        thirdWaveStatus = `Тре: ${thirdWaveRangeStart}-${thirdWaveRangeEnd}.`;
-                    } else if (thirdWaveRangeStart <= GAME_THRESHOLD && thirdWaveRangeEnd > GAME_THRESHOLD) {
-                        thirdWaveStatus = `Тре: ${thirdWaveRangeStart}-${GAME_THRESHOLD}+ (за счетом).`;
-                    } else {
-                        thirdWaveStatus = `Тре: За счетом.`;
-                    }
-                    waveMsgParts.push(thirdWaveStatus);
-                    
-                    wavePrediction = waveMsgParts.join(' ');
-
-
-                    if (parseFloat(avgA) < parseFloat(avgB)) {
-                        potentialLeader = "Игрок A";
-                    } else if (parseFloat(avgB) < parseFloat(avgA)) {
-                        potentialLeader = "Игрок B";
-                    } else {
-                        potentialLeader = "Равны";
-                    }
-
-                    const isNextWaveBeyondScore = (nextWaveRangeEnd > GAME_THRESHOLD);
-                    const isThirdWaveBeyondScore = (thirdWaveRangeStart > GAME_THRESHOLD); 
-
-                    if (isNextWaveBeyondScore || isThirdWaveBeyondScore) {
-                        potentialLeader += " (волны вероятно за счетом).";
-                    } else {
-                        potentialLeader += " (волны в пределах счета).";
-                    }
-                }
-                
-                wavePredictionSpan.textContent = wavePrediction;
-                potentialLeaderSpan.textContent = potentialLeader;
-
-
-                resultDiv.classList.remove("hidden");
-
-                if (chartInstance) {
-                    chartInstance.data.labels = labels;
-                    chartInstance.data.datasets[0].data = dataA;
-                    chartInstance.data.datasets[1].data = dataB;
-                    chartInstance.update();
-                } else {
-                    const ctx = chartCanvas.getContext('2d');
-                    chartInstance = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [
-                                {
-                                    label: 'Коэф. A', 
-                                    data: dataA,
-                                    borderColor: '#4f46e5', 
-                                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
-                                    tension: 0.2,
-                                    pointBackgroundColor: '#4f46e5',
-                                    pointBorderColor: '#fff',
-                                    pointHoverBackgroundColor: '#fff',
-                                    pointHoverBorderColor: '#4f46e5',
-                                    fill: false
-                                },
-                                {
-                                    label: 'Коэф. B', 
-                                    data: dataB,
-                                    borderColor: '#ef4444', 
-                                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                                    tension: 0.2,
-                                    pointBackgroundColor: '#ef4444',
-                                    pointBorderColor: '#fff',
-                                    pointHoverBackgroundColor: '#fff',
-                                    pointHoverBorderColor: '#ef4444',
-                                    fill: false
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Гейм',
-                                        color: 'white'
-                                    },
-                                    grid: {
-                                        color: '#333'
-                                    },
-                                    ticks: {
-                                        color: 'white',
-                                        font: {
-                                            size: 10 
-                                        }
-                                    }
-                                },
-                                y: {
-                                    beginAtZero: false,
-                                    title: {
-                                        display: true,
-                                        text: 'Коэф.', 
-                                        color: 'white'
-                                    },
-                                    grid: {
-                                        color: '#333'
-                                    },
-                                    ticks: {
-                                        color: 'white',
-                                        font: {
-                                            size: 10 
-                                        }
-                                    }
-                                }
-                            },
-                            plugins: {
-                                legend: {
-                                    labels: {
-                                        color: 'white',
-                                        font: {
-                                            size: 10 
-                                        },
-                                        boxWidth: 15, 
-                                        padding: 5 
-                                    }
-                                }
+                    if (!isNaN(game1) && !isNaN(game3) && !isNaN(game2) && !isNaN(game4)) {
+                        if (Math.abs(game1 - game3) <= 0.02) {
+                            if (game4 < game2) {
+                                winner = "Победитель - Игрок 1";
+                                winnerFound = true;
+                                break;
+                            } else if (game4 > game2) {
+                                winner = "Победитель - Игрок 2";
+                                winnerFound = true;
+                                break;
                             }
                         }
-                    });
+                    }
                 }
+
+                winnerSpan.textContent = winner;
+                resultDiv.classList.remove("hidden");
+				hideKeyboard();
             };
 
             inputs.forEach((input) => {
@@ -710,7 +445,6 @@
                 input.setAttribute('autocomplete', 'off');
 
                 input.addEventListener("focus", () => {
-
                     activeInput = input;
                     customKeyboard.classList.add("visible");
                     document.body.classList.add("keyboard-active");
@@ -739,65 +473,41 @@
 
                     if (key === "delete") {
                         activeInput.value = currentValue.slice(0, -1);
-                        performAnalysis(); 
+                        performAnalysis();
                     } else if (key === ".") {
                         if (!currentValue.includes(',')) {
                             if (currentValue.length === 0) {
                                 activeInput.value = "0,";
-                            } else if (/^\d+$/.test(currentValue)) { 
+                            } else if (/^\d+$/.test(currentValue)) {
                                 activeInput.value = currentValue + ",";
                             }
                         }
-                    } else { 
+                    } else {
                         if (!currentValue.includes(',')) {
                             if (currentValue.length === 0) {
-                                activeInput.value = key; 
-                            } else if (currentValue.length === 1 && !isNaN(parseInt(currentValue))) { 
+                                activeInput.value = key;
+                            } else if (currentValue.length === 1 && !isNaN(parseInt(currentValue))) {
                                 activeInput.value = currentValue + ',' + key;
-                            } else if (currentValue.length < 5) { 
+                            } else if (currentValue.length < 5) {
                                 activeInput.value += key;
                             }
-                        } else { 
+                        } else {
                             const parts = currentValue.split(',');
                             if (parts[1].length < 2) {
                                 activeInput.value += key;
                             }
                         }
                     }
-
-                    let value = activeInput.value;
-                    const parts = value.split(',');
-
-                    if (parts.length === 2 && parts[1].length === 2) {
-                        const currentIndex = Array.from(inputs).indexOf(activeInput);
-                        const nextInput = inputs[currentIndex + 1];
-
-                        if (nextInput) {
-                            nextInput.focus(); 
-                        } else {
-                            if (activeInput === lastInput) {
-                                hideKeyboard(); 
-                            }
-                        }
-                    }
-                    performAnalysis();
+					 performAnalysis();
                 });
             });
 
             clearBtn.addEventListener("click", () => {
                 inputs.forEach(input => {
-                    input.value = ""; 
+                    input.value = "";
                 });
-                resultDiv.classList.add("hidden"); 
-                hideKeyboard(); 
-                if (chartInstance) { 
-                    chartInstance.data.labels = [];
-                    chartInstance.data.datasets.forEach(dataset => dataset.data = []);
-                    chartInstance.update();
-                }
-                if (inputs.length > 0) {
-                    inputs[0].focus(); 
-                }
+                resultDiv.classList.add("hidden");
+                hideKeyboard();
             });
 
             // Add this event listener to the document body
@@ -812,5 +522,5 @@
             });
         });
     </script>
-
 </body>
+</html>
