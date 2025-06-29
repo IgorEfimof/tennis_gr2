@@ -1,16 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
     const gameCount = 8; // Используем 8 геймов, как в вашем HTML
     const gamesContainer = document.getElementById("games");
+    const predictBtn = document.getElementById("predictBtn"); // Возвращаем predictBtn, хотя его функционал теперь внутри performAnalysis
     const clearBtn = document.getElementById("clearBtn");
     const resultDiv = document.getElementById("result");
     const winnerSpan = document.getElementById("winner");
+    const avgASpan = document.getElementById("avgA"); // Эти спаны теперь не используются в новой логике, но оставляем их
+    const avgBSpan = document.getElementById("avgB"); // для соответствия HTML и если они будут нужны в будущем
+
+    const chartCanvas = document.getElementById("chart");
+    let chartInstance = null; // Переменная для экземпляра графика Chart.js
 
     const customKeyboard = document.getElementById("custom-keyboard");
     const keyboardButtons = customKeyboard.querySelectorAll("button");
 
     let activeInput = null; // Переменная для отслеживания активного поля ввода
 
-    // Выбираем все существующие input-поля на странице
+    // Создаем поля ввода для каждого гейма
+    // Эта часть кода была закомментирована, так как поля уже есть в HTML.
+    // Если вам нужно динамическое создание, раскомментируйте и удалите статичные поля из HTML.
+    // for (let i = 1; i <= gameCount; i++) {
+    //     const div = document.createElement("div");
+    //     div.className = "game-input";
+    //     div.innerHTML = `
+    //         <p><strong>Гейм ${i}</strong></p>
+    //         <input type="text" inputmode="none" placeholder="Коэффициент A" data-player="a" data-id="${i}" maxlength="5" readonly>
+    //         <input type="text" inputmode="none" placeholder="Коэффициент B" data-player="b" data-id="${i}" maxlength="5" readonly>
+    //     `;
+    //     gamesContainer.appendChild(div);
+    // }
+
     const inputs = document.querySelectorAll("input[type='text']");
 
     // Функция для скрытия клавиатуры
@@ -61,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const kf_Nplus3 = valuesA[gameNplus3_idx];
 
             // Проверяем, что все нужные коэффициенты существуют (не NaN)
-            // Убедимся, что индексы не выходят за пределы массива valuesA
+            // и что индексы не выходят за пределы массива valuesA
             if (gameNplus3_idx < valuesA.length &&
                 !isNaN(kf_N) && !isNaN(kf_Nplus2) && !isNaN(kf_Nplus1) && !isNaN(kf_Nplus3)) {
                 // Условие одинаковости коэффициентов (допуск +/- 0.02)
@@ -186,6 +205,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // Обработчик для кнопки "Прогнозировать победителя" (функционал перенесен в performAnalysis)
+    // Эта кнопка теперь просто вызывает performAnalysis
+    predictBtn.addEventListener("click", () => {
+        performAnalysis();
+    });
+
     // Обработчик для кнопки "Очистить данные"
     clearBtn.addEventListener("click", () => {
         inputs.forEach(input => {
@@ -193,6 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         resultDiv.classList.add("hidden");
         winnerSpan.textContent = "Победитель не определен"; // Сбрасываем текст победителя
+        // avgASpan.textContent = '0.00'; // Сбрасываем неиспользуемые спаны
+        // avgBSpan.textContent = '0.00'; // Сбрасываем неиспользуемые спаны
         hideKeyboard(); // Скрываем клавиатуру при очистке
     });
 
@@ -202,12 +229,54 @@ document.addEventListener("DOMContentLoaded", () => {
         const isClickOnInput = Array.from(inputs).some(input => input.contains(e.target));
         const isClickOnKeyboard = customKeyboard.contains(e.target);
         const isClickOnClearButton = clearBtn.contains(e.target);
+        const isClickOnPredictButton = predictBtn.contains(e.target); // Включаем кнопку прогноза
 
-        // Если клавиатура видима и клик был НЕ на поле ввода, НЕ на клавиатуре и НЕ на кнопке "Очистить"
-        if (customKeyboard.classList.contains("visible") && !isClickOnInput && !isClickOnKeyboard && !isClickOnClearButton) {
+        // Если клавиатура видима и клик был НЕ на поле ввода, НЕ на клавиатуре, НЕ на кнопке "Очистить" и НЕ на кнопке "Прогноз"
+        if (customKeyboard.classList.contains("visible") && !isClickOnInput && !isClickOnKeyboard && !isClickOnClearButton && !isClickOnPredictButton) {
             hideKeyboard();
         }
     });
+
+    // Инициализация Chart.js (возвращаем эту секцию)
+    if (chartCanvas) {
+        const ctx = chartCanvas.getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Светлые линии сетки
+                        },
+                        ticks: {
+                            color: 'white' // Белый цвет текста меток
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Светлые линии сетки
+                        },
+                        ticks: {
+                            color: 'white' // Белый цвет текста меток
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white' // Белый цвет текста легенды
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     // Выполняем первоначальный анализ при загрузке страницы, если есть заполненные поля
     performAnalysis();
