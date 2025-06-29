@@ -492,7 +492,7 @@
                  document.body.classList.add('keyboard-active');
                 });
                  input.addEventListener('input', () => {
-                    if (input.value.length >= 5) {
+                    if (input.value.length >= 4) {
                         const currentIndex = Array.from(inputs).indexOf(input);
                         const nextInput = inputs[currentIndex + 1];
                         if (nextInput) {
