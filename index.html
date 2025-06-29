@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Анализ коэффициентов в настольном теннисе (LIVE)</title>
-    <script src="data:text/javascript;base64,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImNoYXJ0c2VydmVyIiwiaWF0IjoxNjU5NTA2NjA2LCJleHAiOjE2NjIwOTg2MDZ9.YOUR_CHARTJS_BASE64_HERE" onerror="var chartScript = document.createElement('script'); chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js'; document.head.appendChild(chartScript);"></script>
+    <script src="data:text/javascript;base64,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImNoYXJ0c2VydmVyIiwiaWF0IjoxNjU5NTA2NjA2LCJleHAiOjE2NjIwOTg2MDZ9.YOUR_CHARTJS_BASE64_HERE" onerror="var[...]"
     <style>
         /* Общие стили */
         * {
@@ -359,6 +359,7 @@
                 <p>1-е сближение: <span id="firstIntersectionPoint"></span></p>
                 <p><strong>Прогноз волн (от текущей):</strong> <span id="wavePrediction"></span></p>
                 <p><strong>Лидер (по анализу):</strong> <span id="potentialLeader"></span></p>
+                <p><strong>Предполагаемый победитель:</strong> <span id="winnerAnalysis"></span></p>
             </div>
             <canvas id="chart"></canvas>
         </main>
@@ -393,6 +394,7 @@
             const firstIntersectionPointSpan = document.getElementById("firstIntersectionPoint");
             const wavePredictionSpan = document.getElementById("wavePrediction");
             const potentialLeaderSpan = document.getElementById("potentialLeader");
+            const winnerAnalysisSpan = document.getElementById("winnerAnalysis");
             
             const chartCanvas = document.getElementById("chart");
             let chartInstance = null; 
@@ -608,6 +610,38 @@
                 wavePredictionSpan.textContent = wavePrediction;
                 potentialLeaderSpan.textContent = potentialLeader;
 
+                //  Добавленный анализ победителя
+                let winner = "Не определяется";
+                if (filledGamesCount >= 5) {
+                    const pairs = [
+                        [0, 2], [1, 3], [2, 4], [3, 5], [4, 6]
+                    ];
+
+                    for (const [i, j] of pairs) {
+                        if (i < valuesA.length && j < valuesA.length && i < valuesB.length && j < valuesB.length) {
+                            const diffA = valuesA[i];
+                            const diffB = valuesA[j];
+                            const diff = Math.abs(diffA - diffB);
+
+                            if (diff <= 0.02) {
+                                const intermediateGameIndex = i + 1;
+                                const nextGameIndex = j + 1;
+
+                                if (nextGameIndex < valuesB.length && intermediateGameIndex < valuesB.length) {
+                                    if (valuesB[nextGameIndex] < valuesB[intermediateGameIndex]) {
+                                        winner = "Игрок A";
+                                        break;
+                                    } else {
+                                        winner = "Игрок B";
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                winnerAnalysisSpan.textContent = winner;
+
 
                 resultDiv.classList.remove("hidden");
 
@@ -677,6 +711,7 @@
                                         color: 'white'
                                     },
                                     grid: {
+                                    
                                         color: '#333'
                                     },
                                     ticks: {
@@ -814,3 +849,4 @@
     </script>
 
 </body>
+</html>
