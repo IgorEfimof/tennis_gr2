@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const gameCount = 8; // Используем 8 геймов, как в вашем HTML
     const gamesContainer = document.getElementById("games");
-    const predictBtn = document.getElementById("predictBtn"); // Возвращаем predictBtn, хотя его функционал теперь внутри performAnalysis
+    const predictBtn = document.getElementById("predictBtn"); // Возвращаем predictBtn
     const clearBtn = document.getElementById("clearBtn");
     const resultDiv = document.getElementById("result");
     const winnerSpan = document.getElementById("winner");
@@ -16,20 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let activeInput = null; // Переменная для отслеживания активного поля ввода
 
-    // Создаем поля ввода для каждого гейма
-    // Эта часть кода была закомментирована, так как поля уже есть в HTML.
-    // Если вам нужно динамическое создание, раскомментируйте и удалите статичные поля из HTML.
-    // for (let i = 1; i <= gameCount; i++) {
-    //     const div = document.createElement("div");
-    //     div.className = "game-input";
-    //     div.innerHTML = `
-    //         <p><strong>Гейм ${i}</strong></p>
-    //         <input type="text" inputmode="none" placeholder="Коэффициент A" data-player="a" data-id="${i}" maxlength="5" readonly>
-    //         <input type="text" inputmode="none" placeholder="Коэффициент B" data-player="b" data-id="${i}" maxlength="5" readonly>
-    //     `;
-    //     gamesContainer.appendChild(div);
-    // }
-
+    // Выбираем все существующие input-поля на странице
     const inputs = document.querySelectorAll("input[type='text']");
 
     // Функция для скрытия клавиатуры
@@ -153,32 +140,38 @@ document.addEventListener("DOMContentLoaded", () => {
             if (key === "delete") {
                 // Удаляем последний символ
                 activeInput.value = currentValue.slice(0, -1);
-            } else if (key === ".") {
-                // Обрабатываем ввод десятичной точки/запятой
-                // Разрешаем добавить запятую только один раз
+            } else if (key === ".") { // Обработка кнопки точки/запятой
+                // Если нет запятой в текущем значении
                 if (!currentValue.includes(',')) {
-                    // Если поле пустое, начинаем с "0,"
-                    // Если уже есть число (например, "1" или "10"), добавляем ","
-                    activeInput.value = currentValue.length === 0 ? "0," : currentValue + ",";
+                    // Если поле пустое, ставим "0,"
+                    if (currentValue.length === 0) {
+                        activeInput.value = "0,";
+                    } else if (currentValue.length === 1 && currentValue !== '0') {
+                        // Если введена одна цифра (не 0), добавляем запятую (например, "1" -> "1,")
+                        activeInput.value += ',';
+                    } else if (currentValue.length === 2 && !currentValue.startsWith('0')) {
+                        // Если введено две цифры (не "0x"), добавляем запятую (например, "12" -> "12,")
+                        activeInput.value += ',';
+                    }
                 }
-            } else { // Ввод цифр
+            } else { // Ввод цифр (0-9)
                 // Проверяем, не превышает ли длина maxlength
                 if (currentValue.length < activeInput.maxLength) {
-                    if (!currentValue.includes(',')) {
-                        // Если поле пустое, вставляем цифру и запятую
-                        if (currentValue.length === 0) {
-                            activeInput.value = key + ',';
-                        } else if (currentValue.length === 2) { // Если уже введено 2 цифры (например, "10"), то ставим запятую
-                            activeInput.value = currentValue + ',' + key;
-                        } else { // Иначе просто добавляем цифру
-                            activeInput.value += key;
-                        }
-                    } else {
+                    if (currentValue.length === 0) {
+                        // Если поле пустое и вводим цифру, сразу добавляем запятую после неё
+                        activeInput.value = key + ',';
+                    } else if (currentValue.includes(',')) {
                         const parts = currentValue.split(',');
                         // Разрешаем ввести только 2 цифры после запятой
                         if (parts[1].length < 2) {
                             activeInput.value += key;
                         }
+                    } else if (currentValue.length === 1) {
+                         // Если есть одна цифра (например, '1'), добавляем вторую (например, '12')
+                         activeInput.value += key;
+                    } else if (currentValue.length === 2) {
+                        // Если две цифры (например, '12'), ищем запятую. Если нет, добавляем с запятой.
+                        activeInput.value = currentValue + ',' + key;
                     }
                 }
             }
@@ -186,13 +179,10 @@ document.addEventListener("DOMContentLoaded", () => {
             // После каждого ввода выполняем анализ
             performAnalysis();
 
-            // Автоматический переход к следующему полю, если текущее заполнено в формате X,XX или XXX
+            // Автоматический переход к следующему полю, если текущее заполнено в формате X,XX
             const value = activeInput.value;
-            // Условие:
-            // 1. Значение содержит запятую и 2 цифры после запятой (пример: "1,23")
-            // ИЛИ
-            // 2. Значение не содержит запятую и состоит из 3 цифр (пример: "100")
-            if ((value.includes(',') && value.split(',')[1].length === 2) || (!value.includes(',') && value.length === 3)) {
+            // Условие перехода: значение должно содержать запятую и ровно 2 цифры после нее.
+            if (value.includes(',') && value.split(',')[1].length === 2) {
                 const currentIndex = Array.from(inputs).indexOf(activeInput);
                 const nextInput = inputs[currentIndex + 1];
                 if (nextInput) {
@@ -206,7 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Обработчик для кнопки "Прогнозировать победителя" (функционал перенесен в performAnalysis)
-    // Эта кнопка теперь просто вызывает performAnalysis
     predictBtn.addEventListener("click", () => {
         performAnalysis();
     });
@@ -237,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Инициализация Chart.js (возвращаем эту секцию)
+    // Инициализация Chart.js
     if (chartCanvas) {
         const ctx = chartCanvas.getContext('2d');
         chartInstance = new Chart(ctx, {
