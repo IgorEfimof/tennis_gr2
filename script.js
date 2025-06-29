@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const gameCount = 8; // Изменил на 8, так как в HTML у вас до Гейма 8, а логика до 7-го
+    const gameCount = 8; // Используем 8 геймов, как в вашем HTML
     const gamesContainer = document.getElementById("games");
-    const clearBtn = document.getElementById("clearBtn"); // Переименовал, чтобы соответствовало HTML
+    const clearBtn = document.getElementById("clearBtn");
     const resultDiv = document.getElementById("result");
     const winnerSpan = document.getElementById("winner");
 
@@ -10,21 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let activeInput = null; // Переменная для отслеживания активного поля ввода
 
-    // Динамическое создание полей ввода (если gameCount больше 8, нужно добавить в HTML)
-    // Оставляю эту часть как была, так как в HTML у вас уже есть до 8 геймов.
-    // Если вам нужно динамически создавать, то нужно сначала удалить старые game-input из HTML
-    // или адаптировать эту логику. Пока оставляем как есть, исходя из HTML.
-    // for (let i = 1; i <= gameCount; i++) {
-    //     const div = document.createElement("div");
-    //     div.className = "game-input";
-    //     div.innerHTML = `
-    //         <p><strong>Гейм ${i}</strong></p>
-    //         <input type="text" inputmode="none" placeholder="Коэффициент A" data-player="a" data-id="${i}" maxlength="5" readonly>
-    //         <input type="text" inputmode="none" placeholder="Коэффициент B" data-player="b" data-id="${i}" maxlength="5" readonly>
-    //     `;
-    //     gamesContainer.appendChild(div);
-    // }
-
+    // Выбираем все существующие input-поля на странице
     const inputs = document.querySelectorAll("input[type='text']");
 
     // Функция для скрытия клавиатуры
@@ -37,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
         activeInput = null; // Сбрасываем активное поле
     };
 
-    // Функция для форматирования значения и преобразования в число
+    // Функция для форматирования значения из строки (X,XX) в число (X.XX)
     const formatAndParseValue = (valueStr) => {
         if (!valueStr) return NaN;
         // Заменяем запятую на точку для parseFloat
@@ -49,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let winner = "Победитель не определен";
         let winnerFound = false;
 
-        // Собираем коэффициенты игрока А
+        // Собираем коэффициенты только для Игрока А
         const valuesA = [];
         inputs.forEach(input => {
             if (input.dataset.player === 'a') {
@@ -57,14 +43,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Пары геймов для анализа (0-индексированные): (0,2), (1,3), (2,4), (3,5), (4,6)
-        // Соответствует геймам 1-3, 2-4, 3-5, 4-6, 5-7
+        // Пары геймов для анализа (0-индексированные массивы valuesA):
+        // [индекс_коэф_N, индекс_коэф_N+2, индекс_коэф_N+1, индекс_коэф_N+3]
+        // Соответствует геймам: (1,3), (2,4), (3,5), (4,6), (5,7)
         const analysisPairs = [
-            [0, 2, 1, 3], // G1 vs G3, check G2 and G4
-            [1, 3, 2, 4], // G2 vs G4, check G3 and G5
-            [2, 4, 3, 5], // G3 vs G5, check G4 and G6
-            [3, 5, 4, 6], // G4 vs G6, check G5 and G7
-            [4, 6, 5, 7]  // G5 vs G7, check G6 and G8 (в HTML 8 геймов, поэтому до индекса 7)
+            [0, 2, 1, 3], // Гейм 1 vs Гейм 3, проверка Гейм 2 и Гейм 4 (индексы A0, A2, A1, A3)
+            [1, 3, 2, 4], // Гейм 2 vs Гейм 4, проверка Гейм 3 и Гейм 5 (индексы A1, A3, A2, A4)
+            [2, 4, 3, 5], // Гейм 3 vs Гейм 5, проверка Гейм 4 и Гейм 6 (индексы A2, A4, A3, A5)
+            [3, 5, 4, 6], // Гейм 4 vs Гейм 6, проверка Гейм 5 и Гейм 7 (индексы A3, A5, A4, A6)
+            [4, 6, 5, 7]  // Гейм 5 vs Гейм 7, проверка Гейм 6 и Гейм 8 (индексы A4, A6, A5, A7)
         ];
 
         for (const [gameN_idx, gameNplus2_idx, gameNplus1_idx, gameNplus3_idx] of analysisPairs) {
@@ -74,7 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const kf_Nplus3 = valuesA[gameNplus3_idx];
 
             // Проверяем, что все нужные коэффициенты существуют (не NaN)
-            if (!isNaN(kf_N) && !isNaN(kf_Nplus2) && !isNaN(kf_Nplus1) && !isNaN(kf_Nplus3)) {
+            // Убедимся, что индексы не выходят за пределы массива valuesA
+            if (gameNplus3_idx < valuesA.length &&
+                !isNaN(kf_N) && !isNaN(kf_Nplus2) && !isNaN(kf_Nplus1) && !isNaN(kf_Nplus3)) {
                 // Условие одинаковости коэффициентов (допуск +/- 0.02)
                 if (Math.abs(kf_N - kf_Nplus2) <= 0.02) {
                     if (kf_Nplus3 < kf_Nplus1) {
@@ -93,23 +82,14 @@ document.addEventListener("DOMContentLoaded", () => {
         winnerSpan.textContent = winner;
         resultDiv.classList.remove("hidden");
 
-        // Если победитель найден или все поля для анализа (до 7 гейма игрока А) заполнены
-        const lastRelevantInputForAnalysis = inputs[9]; // Это input для Гейма 5 Игрока А (индекс 8), или Гейма 7 игрока А (индекс 12), если смотреть все поля то это input для Гейма 7 Игрока А (индекс 12)
-        // У нас 8 геймов, каждый гейм это 2 инпута (А и В)
-        // Гейм 1 (индекс 0,1)
-        // Гейм 2 (индекс 2,3)
-        // Гейм 3 (индекс 4,5)
-        // Гейм 4 (индекс 6,7)
-        // Гейм 5 (индекс 8,9)
-        // Гейм 6 (индекс 10,11)
-        // Гейм 7 (индекс 12,13)
-        // Гейм 8 (индекс 14,15)
-        // Для последней пары (Гейм 5 - Гейм 7) нам нужны коэффициенты игрока А в геймах 5, 7, 6, 8.
-        // Это input'ы с индексами: 8 (А5), 12 (А7), 10 (А6), 14 (А8).
-        // Поэтому достаточно проверить, заполнен ли последний input из этой группы, т.е. input с индексом 14.
-        const lastInputForPlayerAAnalysis = inputs[14]; // Коэффициент А для Гейма 8
+        // Условие скрытия клавиатуры:
+        // 1. Победитель найден ИЛИ
+        // 2. Все коэффициенты Игрока А до Гейма 8 включительно заполнены
+        const allRelevantAInputsFilled = Array.from(inputs)
+            .filter(input => input.dataset.player === 'a' && parseInt(input.dataset.id) <= gameCount)
+            .every(input => input.value !== "");
 
-        if (winnerFound || (lastInputForPlayerAAnalysis && lastInputForPlayerAAnalysis.value !== "")) {
+        if (winnerFound || allRelevantAInputsFilled) {
             hideKeyboard();
         }
     };
@@ -117,9 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Обработчики для полей ввода (появление клавиатуры)
     inputs.forEach((input) => {
+        // Запрещаем ввод с системной клавиатуры и автозаполнение
         input.setAttribute('inputmode', 'none');
-        input.setAttribute('readonly', 'readonly'); // Запрещаем ввод с системной клавиатуры
-        input.setAttribute('autocomplete', 'off'); // Отключаем автозаполнение
+        input.setAttribute('readonly', 'readonly');
+        input.setAttribute('autocomplete', 'off');
 
         input.addEventListener("focus", () => {
             activeInput = input;
@@ -133,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Добавляем обработчик click, чтобы принудительно вызывать focus
         input.addEventListener('click', (e) => {
-            e.preventDefault(); // Предотвращаем дефолтное поведение, чтобы не открывалась системная клавиатура
+            e.preventDefault(); // Предотвращаем дефолтное поведение
             input.focus();
             activeInput = input;
             customKeyboard.classList.add('visible');
@@ -157,18 +138,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Обрабатываем ввод десятичной точки/запятой
                 // Разрешаем добавить запятую только один раз
                 if (!currentValue.includes(',')) {
-                    // Если поле пустое или начинается с нуля и нет запятой, добавляем "0,"
-                    // Иначе просто добавляем запятую
-                    activeInput.value = currentValue.length === 0 || currentValue === '0' ? "0," : currentValue + ",";
+                    // Если поле пустое, начинаем с "0,"
+                    // Если уже есть число (например, "1" или "10"), добавляем ","
+                    activeInput.value = currentValue.length === 0 ? "0," : currentValue + ",";
                 }
             } else { // Ввод цифр
                 // Проверяем, не превышает ли длина maxlength
                 if (currentValue.length < activeInput.maxLength) {
                     if (!currentValue.includes(',')) {
-                        // Если нет запятой, и введено 2 символа (например, "10"), то следующий символ должен идти после запятой
-                        if (currentValue.length === 2 && !currentValue.includes(',')) {
+                        // Если поле пустое, вставляем цифру и запятую
+                        if (currentValue.length === 0) {
+                            activeInput.value = key + ',';
+                        } else if (currentValue.length === 2) { // Если уже введено 2 цифры (например, "10"), то ставим запятую
                             activeInput.value = currentValue + ',' + key;
-                        } else {
+                        } else { // Иначе просто добавляем цифру
                             activeInput.value += key;
                         }
                     } else {
@@ -184,13 +167,13 @@ document.addEventListener("DOMContentLoaded", () => {
             // После каждого ввода выполняем анализ
             performAnalysis();
 
-            // Автоматический переход к следующему полю, если текущее заполнено в формате X,XX или X.XX
-            // Используем RegExp для проверки формата 1.23 или 1,23
+            // Автоматический переход к следующему полю, если текущее заполнено в формате X,XX или XXX
             const value = activeInput.value;
-            const isFormatted = /^\d+(?:,\d{2})?$/.test(value) || /^\d+(?:\.\d{2})?$/.test(value);
-
-            // Если это не точка и не удаление, и значение заполнено до 2-х знаков после запятой (или 3-х знаков без запятой, например "100")
-            if (key !== "." && key !== "delete" && (value.includes(',') && value.split(',')[1].length === 2 || !value.includes(',') && value.length === 3)) {
+            // Условие:
+            // 1. Значение содержит запятую и 2 цифры после запятой (пример: "1,23")
+            // ИЛИ
+            // 2. Значение не содержит запятую и состоит из 3 цифр (пример: "100")
+            if ((value.includes(',') && value.split(',')[1].length === 2) || (!value.includes(',') && value.length === 3)) {
                 const currentIndex = Array.from(inputs).indexOf(activeInput);
                 const nextInput = inputs[currentIndex + 1];
                 if (nextInput) {
@@ -209,8 +192,8 @@ document.addEventListener("DOMContentLoaded", () => {
             input.value = "";
         });
         resultDiv.classList.add("hidden");
-        winnerSpan.textContent = "Победитель не определен"; // Сброс текста победителя
-        hideKeyboard();
+        winnerSpan.textContent = "Победитель не определен"; // Сбрасываем текст победителя
+        hideKeyboard(); // Скрываем клавиатуру при очистке
     });
 
     // ГЛОБАЛЬНЫЙ ОБРАБОТЧИК КЛИКОВ ДЛЯ СКРЫТИЯ КЛАВИАТУРЫ
@@ -218,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Проверяем, если клик произошел вне полей ввода и вне самой клавиатуры
         const isClickOnInput = Array.from(inputs).some(input => input.contains(e.target));
         const isClickOnKeyboard = customKeyboard.contains(e.target);
-        const isClickOnClearButton = clearBtn.contains(e.target); // Учитываем кнопку "Очистить"
+        const isClickOnClearButton = clearBtn.contains(e.target);
 
         // Если клавиатура видима и клик был НЕ на поле ввода, НЕ на клавиатуре и НЕ на кнопке "Очистить"
         if (customKeyboard.classList.contains("visible") && !isClickOnInput && !isClickOnKeyboard && !isClickOnClearButton) {
@@ -226,6 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Первоначальный анализ при загрузке страницы (если есть сохраненные данные)
+    // Выполняем первоначальный анализ при загрузке страницы, если есть заполненные поля
     performAnalysis();
 });
