@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Анализ коэффициентов в настольном теннисе (LIVE)</title>
-    <script src="data:text/javascript;base64,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImNoYXJ0c2VydmVyIiwiaWF0IjoxNjU5NTA2NjA2LCJleHAiOjE2NjIwOTg2MDZ9.YOUR_CHARTJS_BASE64_HERE" onerror="var[...]
+    <script src="data:text/javascript;base64,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6ImNoYXJ0c2VydmVyIiwiaWF0IjoxNjU5NTA2NjA2LCJleHAiOjE2NjIwOTg2MDZ9.YOUR_CHARTJS_BASE64_HERE" onerror="var chartScript = document.createElement('script'); chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js'; document.head.appendChild(chartScript);"></script>
     <style>
         /* Общие стили */
         * {
@@ -702,66 +702,6 @@
                         }
                     });
                 }
-
-                 // Новый расчет
-                let predictedWinner = "Нет данных";
-                for (let i = 0; i < filledGamesCount - 4; i++) {
-                    const game1A = valuesA[i];
-                    const game1B = valuesB[i];
-                    const game2A = valuesA[i + 1];
-                    const game2B = valuesB[i + 1];
-                    const game3A = valuesA[i + 2];
-                    const game3B = valuesB[i + 2];
-                    const game4A = valuesA[i + 3];
-                    const game4B = valuesB[i + 3];
-                    const game5A = valuesA[i + 4];
-                    const game5B = valuesB[i + 4];
-
-
-                    if (!isNaN(game1A) && !isNaN(game1B) &&
-                        !isNaN(game2A) && !isNaN(game2B) &&
-                        !isNaN(game3A) && !isNaN(game3B) &&
-                        !isNaN(game4A) && !isNaN(game4B) &&
-                        !isNaN(game5A) && !isNaN(game5B)) {
-
-                        const diff1 = Math.abs(game1A - game1B);
-                        const diff2 = Math.abs(game2A - game2B);
-                        const diff3 = Math.abs(game3A - game3B);
-                        const diff4 = Math.abs(game4A - game4B);
-                        const diff5 = Math.abs(game5A - game5B);
-
-                        const tolerance = 0.02;
-
-                        if (
-                            Math.abs(diff1 - diff2) <= tolerance &&
-                            Math.abs(diff2 - diff3) <= tolerance &&
-                            Math.abs(diff3 - diff4) <= tolerance &&
-                            Math.abs(diff4 - diff5) <= tolerance
-                        ) {
-                            const intermediateGameA = valuesA[i + 1];
-                            const intermediateGameB = valuesB[i + 1];
-                            const nextGameA = valuesA[i + 2];
-                            const nextGameB = valuesB[i + 2];
-
-
-                            if (!isNaN(intermediateGameA) && !isNaN(intermediateGameB) &&   !isNaN(nextGameA) && !isNaN(nextGameB)) {
-                                const intermediateDiff = Math.abs(intermediateGameA - intermediateGameB)
-                                const nextDiff = Math.abs(nextGameA - nextGameB);
-
-                                if (nextDiff < intermediateDiff) {
-                                    predictedWinner = "Игрок A";
-                                } else if (nextDiff > intermediateDiff) {
-                                    predictedWinner = "Игрок B";
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Вывод результата нового расчета
-                const newResultParagraph = document.createElement("p");
-                newResultParagraph.innerHTML = `<strong>Прогноз по коэффициентам:</strong> ${predictedWinner}`;
-                resultDiv.appendChild(newResultParagraph);
             };
 
             inputs.forEach((input) => {
@@ -835,3 +775,42 @@
                         if (nextInput) {
                             nextInput.focus(); 
                         } else {
+                            if (activeInput === lastInput) {
+                                hideKeyboard(); 
+                            }
+                        }
+                    }
+                    performAnalysis();
+                });
+            });
+
+            clearBtn.addEventListener("click", () => {
+                inputs.forEach(input => {
+                    input.value = ""; 
+                });
+                resultDiv.classList.add("hidden"); 
+                hideKeyboard(); 
+                if (chartInstance) { 
+                    chartInstance.data.labels = [];
+                    chartInstance.data.datasets.forEach(dataset => dataset.data = []);
+                    chartInstance.update();
+                }
+                if (inputs.length > 0) {
+                    inputs[0].focus(); 
+                }
+            });
+
+            // Add this event listener to the document body
+            document.body.addEventListener("click", (event) => {
+                if (!activeInput) return; // If no input is active, do nothing
+
+                const target = event.target;
+                // Check if the click target is NOT an input field and NOT inside the custom keyboard
+                if (target !== activeInput && !customKeyboard.contains(target)) {
+                    hideKeyboard();
+                }
+            });
+        });
+    </script>
+
+</body>
