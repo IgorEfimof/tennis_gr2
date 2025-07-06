@@ -820,20 +820,8 @@
             });
 
             clearBtn.addEventListener("click", () => {
-                inputs.forEach(input => {
-                    input.value = ""; 
-                });
-                resultDiv.classList.add("hidden"); 
-                hideKeyboard(); 
-                if (chartInstance) { 
-                    chartInstance.data.labels = [];
-                    chartInstance.data.datasets.forEach(dataset => dataset.data = []);
-                    chartInstance.update();
-                }
-                if (inputs.length > 0) {
-                    inputs[0].focus(); 
-                }
-            });
+    location.reload();
+});
 
             // Add this event listener to the document body
             document.body.addEventListener("click", (event) => {
