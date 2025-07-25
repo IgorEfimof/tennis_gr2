@@ -140,10 +140,19 @@ button:hover {
   display: none;
 }
 
-/* Изменения для выделения 5-го и 8-го геймов */
+/* ОЧЕНЬ ЯРКОЕ ВЫДЕЛЕНИЕ ДЛЯ 5-ГО И 8-ГО ГЕЙМОВ */
+#games > div:nth-child(5),
+#games > div:nth-child(8) {
+    background-color: rgba(79, 70, 229, 0.25) !important;
+    border: 1px solid rgba(79, 70, 229, 0.5) !important;
+    border-radius: 8px;
+    padding: 0.2rem 0.3rem;
+}
+
+/* Альтернативный селектор */
 .highlight-game {
-    background-color: rgba(79, 70, 229, 0.15) !important; /* Фиолетовый с прозрачностью */
-    border: 1px solid rgba(79, 70, 229, 0.3); /* Тонкая фиолетовая граница */
+    background-color: rgba(79, 70, 229, 0.25) !important;
+    border: 1px solid rgba(79, 70, 229, 0.5) !important;
     border-radius: 8px;
     padding: 0.2rem 0.3rem;
 }
@@ -251,25 +260,30 @@ button:hover {
   }
 
   .game-input p {
-    display: none; /* Скрываем заголовки геймов */
+    display: none;
   }
 
   .game-input input[type="text"] {
-    width: 48%; /* Уменьшаем ширину полей ввода */
+    width: 48%;
   }
   
-  /* Изменения для выделения 5-го и 8-го геймов на мобильных */
+  /* ЯРКОЕ ВЫДЕЛЕНИЕ ДЛЯ МОБИЛЬНЫХ */
+  #games > div:nth-child(5),
+  #games > div:nth-child(8) {
+      background-color: rgba(79, 70, 229, 0.25) !important;
+      padding: 0.15rem 0.2rem;
+  }
+  
+  /* Альтернативный селектор для мобильных */
   .highlight-game {
-    background-color: rgba(79, 70, 229, 0.15) !important;
-    padding: 0.15rem 0.2rem;
+      background-color: rgba(79, 70, 229, 0.25) !important;
+      padding: 0.15rem 0.2rem;
   }
   
-  /* Дополнительный отступ при открытой клавиатуре */
   body.keyboard-active .container {
     padding-bottom: 220px;
   }
   
-  /* Стили для графика */
   #chart {
     height: 180px;
     max-height: 180px;
