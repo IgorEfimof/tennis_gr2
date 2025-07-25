@@ -191,4 +191,7 @@ button:hover {
   .game-input input[type="text"] {
     width: 48%; /* Уменьшаем ширину полей ввода */
   }
+  .highlight-game {
+    background-color: #b2ffb2 !important; /* светло-зеленый */
+  }
 }
