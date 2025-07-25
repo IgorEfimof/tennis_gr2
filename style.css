@@ -13,6 +13,8 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
+  touch-action: pan-y;
+  overflow: hidden;
 }
 
 .container {
@@ -24,7 +26,7 @@ body {
   justify-content: center;
   gap: 0.5rem;
   min-height: 100vh;
-  overflow-y: auto; /* Добавляем прокрутку, если что-то выйдет за экран */
+  overflow-y: auto;
 }
 
 header {
@@ -102,6 +104,9 @@ p {
   border: 1px solid #444;
   border-radius: 6px;
   color: white;
+  caret-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 button {
@@ -135,13 +140,70 @@ button:hover {
   display: none;
 }
 
+/* Изменения для выделения 5-го и 8-го геймов */
 .highlight-game {
-    background-color: #b2ffb2 !important; /* светло-зелёный */
+    background-color: rgba(79, 70, 229, 0.15) !important; /* Фиолетовый с прозрачностью */
+    border: 1px solid rgba(79, 70, 229, 0.3); /* Тонкая фиолетовая граница */
+    border-radius: 8px;
+    padding: 0.2rem 0.3rem;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Кастомная клавиатура */
+#custom-keyboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #282828;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+#custom-keyboard.visible {
+    transform: translateY(0);
+}
+
+#custom-keyboard button {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 1.5rem;
+    background-color: #3a3a3a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#custom-keyboard button:hover {
+    background-color: #4f4f4f;
+}
+
+#custom-keyboard button.delete-key {
+    background-color: #dc3545;
+}
+
+#custom-keyboard button.delete-key:hover {
+    background-color: #c82333;
+}
+
+#custom-keyboard button.empty-key {
+    background-color: transparent;
+    cursor: default;
+    pointer-events: none;
 }
 
 /* Мобильные устройства */
@@ -195,7 +257,22 @@ button:hover {
   .game-input input[type="text"] {
     width: 48%; /* Уменьшаем ширину полей ввода */
   }
+  
+  /* Изменения для выделения 5-го и 8-го геймов на мобильных */
   .highlight-game {
-    background-color: #b2ffb2 !important; /* светло-зеленый */
+    background-color: rgba(79, 70, 229, 0.15) !important;
+    padding: 0.15rem 0.2rem;
+  }
+  
+  /* Дополнительный отступ при открытой клавиатуре */
+  body.keyboard-active .container {
+    padding-bottom: 220px;
+  }
+  
+  /* Стили для графика */
+  #chart {
+    height: 180px;
+    max-height: 180px;
+    margin-top: 0.4rem;
   }
 }
